@@ -1,14 +1,16 @@
 const fs = require('fs');
-
+const ejs = require('ejs')
 const path = require('path')
 // const express = require('./expresstut')
 
 const dirPath = path.join(__dirname,'/crud')
-const filePath = `${dirPath}/apple.txt`
+const filePath = `${dirPath}/apple.txt`;
+const publicPath = path.join(__dirname,'/public');
 
 const express = require('express');
 
 const app = express();
+
 
 // const url = require('./url/urls')
 //create file
@@ -55,4 +57,41 @@ const app = express();
 // waitingData.catch(err=>console.log(err));
 
 
-app.use();
+// app.use(express.static(publicPath));
+
+// app.set('view engine','ejs')
+
+app.get('/',(_,resp)=>{
+    resp.sendFile(`${publicPath}/index.html`)
+})
+
+// app.get('/about',(_,resp)=>{
+//     resp.sendFile(`${publicPath}/about.html`)
+// })
+
+// app.get('/profile',(_,resp)=>{
+//     const user = {
+//         name:'user name',
+//         email:'test@outlook.com'
+//     }
+//     resp.render('/profile')
+// })
+
+//Middleware
+
+const reqFilter = (req,resp,next)=>{
+    if(!req.query.age){
+        resp.send('please enter the age')
+    }else if(req.query.age<18){
+        resp.send('please enter the age greator than 18')
+                 
+    }else{  
+        next()
+    }
+}
+
+app.use(reqFilter)
+
+app.listen(5000,()=>{
+    console.log('example app listing to port : 5000')
+})
